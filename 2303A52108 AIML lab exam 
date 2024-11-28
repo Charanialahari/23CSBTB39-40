@@ -1,0 +1,97 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNmm4ZWK60X/yEzLrGV9IfR",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Charanialahari/23CSBTB39-40/blob/main/2303A52108%20AIML%20lab%20exam%20\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Yfep2EfKh1hV",
+        "outputId": "9458c62e-83fa-4ac2-83d4-2cf61ba4747b"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Accuracy: 0.9916492693110647\n"
+          ]
+        }
+      ],
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.tree import DecisionTreeClassifier\n",
+        "from sklearn.metrics import accuracy_score\n",
+        "from sklearn.preprocessing import OneHotEncoder  # Import OneHotEncoder\n",
+        "\n",
+        "# Load the dataset\n",
+        "data = pd.read_csv('loan_data.csv')\n",
+        "\n",
+        "# Prepare the data\n",
+        "# Replace 'actual_target_column_name' with the actual name of your target column in the dataset\n",
+        "X = data.drop('credit.policy', axis=1)\n",
+        "y = data['credit.policy']\n",
+        "\n",
+        "# Identify categorical features for one-hot encoding\n",
+        "categorical_features = ['purpose']  # Add other categorical features if needed\n",
+        "\n",
+        "# Create a OneHotEncoder instance\n",
+        "encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')  # sparse=False for dense output\n",
+        "\n",
+        "# Fit and transform the categorical features\n",
+        "encoded_data = encoder.fit_transform(X[categorical_features])\n",
+        "\n",
+        "# Create a DataFrame from the encoded data\n",
+        "encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(categorical_features))\n",
+        "\n",
+        "# Drop the original categorical features and concatenate the encoded features\n",
+        "X = X.drop(categorical_features, axis=1)\n",
+        "X = pd.concat([X, encoded_df], axis=1)\n",
+        "\n",
+        "# Split the data into training and testing sets\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\n",
+        "\n",
+        "# Train the Decision Tree Classifier\n",
+        "clf = DecisionTreeClassifier()\n",
+        "clf.fit(X_train, y_train)\n",
+        "\n",
+        "# Make predictions\n",
+        "y_pred = clf.predict(X_test)\n",
+        "\n",
+        "# Evaluate the model\n",
+        "accuracy = accuracy_score(y_test, y_pred)\n",
+        "print(f'Accuracy: {accuracy}')\n",
+        "\n",
+        "Accuracy: 0.9895615866388309"
+      ]
+    }
+  ]
+}
